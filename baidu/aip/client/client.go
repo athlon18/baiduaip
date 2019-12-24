@@ -180,7 +180,7 @@ func (c *Client) getAccessToken() (token string, err error) {
 		return t.AccessToken, nil
 	}
 	// 从存储获取令牌
-	t, err := c.accessTokenStore.Get(c.option.APIKey)
+	t, err := c.accessTokenStore.Get(c.option.AppID)
 	if err != nil && err != store.ErrNotFound {
 		return "", fmt.Errorf("访问令牌存储类型错误:%w", err)
 	}
@@ -188,22 +188,26 @@ func (c *Client) getAccessToken() (token string, err error) {
 	if t != nil && !t.IsExpired(c.option.RefreshTime) {
 		return t.AccessToken, nil
 	}
+	c.Lock()
+	defer c.Unlock()
 	// 获取令牌
 	accessToken, err := c.auth()
 	if err != nil {
 		return "", err
 	}
 	// 保存令牌
-	c.accessTokenStore.Set(c.option.AppID, &store.AccessToken{
+	t = &store.AccessToken{
 		AccessToken: accessToken.AccessToken,
 		ExpiresIn:   accessToken.ExpiresIn,
 		RefreshTime: time.Now().Unix(),
-	})
+	}
+	c.accessTokenStore.Set(c.option.AppID, t)
 	return t.AccessToken, nil
 }
 
 // auth 客户端鉴权认证
 func (c *Client) auth() (token *AccessToken, err error) {
+	fmt.Println("--- auth ---")
 	// 设置参数
 	values := url.Values{}
 	values.Set(grantType, clientCredentials)

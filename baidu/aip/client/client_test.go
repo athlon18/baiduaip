@@ -11,6 +11,8 @@ import (
 	"net/url"
 	"strings"
 	"testing"
+
+	"github.com/antlinker/baiduaip/baidu/aip/store"
 )
 
 var (
@@ -39,7 +41,8 @@ func TestMain(m *testing.M) {
 	if key.AppID == "" || key.APIKey == "" || key.SecretKey == "" {
 		log.Fatalln("AppID|APIKey|SecretKey is empty")
 	}
-	client = NewClient(&Option{AppID: key.AppID, APIKey: key.APIKey, SecretKey: key.SecretKey})
+	client = NewClient(&Option{AppID: key.AppID, APIKey: key.APIKey, SecretKey: key.SecretKey, RefreshTime: 2591995})
+	client.SetAccessTokenStore(store.DefaultAccessTokenStore())
 	m.Run()
 }
 
@@ -153,5 +156,38 @@ func Example() {
 	data := new(json.RawMessage)
 	if err := c.Do(http.MethodPost, uri, "application/json", "json", &r, data); err != nil {
 		fmt.Printf("%s\n", err)
+	}
+}
+
+// 测试从内存读取访问令牌
+func TestClient_getAccessToken(t *testing.T) {
+	type fields struct {
+		client *Client
+	}
+	tests := []struct {
+		name    string
+		fields  fields
+		wantErr bool
+	}{
+		{
+			name: "getAccessToken1",
+			fields: fields{
+				client: client,
+			},
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for i := 0; i < 10; i++ {
+				gotToken, err := tt.fields.client.getAccessToken()
+				if (err != nil) != tt.wantErr {
+					t.Errorf("Client.getAccessToken() error = %v, wantErr %v", err, tt.wantErr)
+					return
+				}
+				t.Logf("get access_token: %s", gotToken)
+				// time.Sleep(1 * time.Second)
+			}
+		})
 	}
 }
