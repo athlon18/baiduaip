@@ -10,27 +10,48 @@ import (
 type AccessToken struct {
 	// AccessToken 访问令牌
 	AccessToken string
+	// ExpiredAt 过期时间
+	ExpiredAt time.Time
 	// ExpiresIn 有效期, 默认1个月
-	ExpiresIn int64
+	// ExpiresIn int64
 	// RefreshTime 最后一次更新时间
-	RefreshTime int64
+	// RefreshTime int64
 }
 
-// IsExpired 是否过期, n的值表示提前多少秒刷新令牌
-func (a *AccessToken) IsExpired(n int64) bool {
-	expires := time.Now().Unix() - a.RefreshTime
-	if expires >= a.ExpiresIn {
+// Expired 令牌过期
+func (a *AccessToken) Expired(n int64) bool {
+	ct := time.Now()
+	// 令牌过期
+	if ct.After(a.ExpiredAt) {
 		return true
 	}
 	// 最少提前60秒刷新
 	if n < 60 {
 		n = 60
 	}
-	if expires >= a.ExpiresIn-n {
+	// 是否需要刷新令牌
+	if d := a.ExpiredAt.Sub(ct); d <= time.Duration(n)*time.Second {
 		return true
 	}
 	return false
 }
+
+// IsExpired 是否过期, n的值表示提前多少秒刷新令牌
+// func (a *AccessToken) IsExpired(n int64) bool {
+// 	expires := time.Now().Unix() - a.RefreshTime
+// 	if expires >= a.ExpiresIn {
+// 		return true
+// 	}
+// 	if n >= a.ExpiresIn {
+// 		return true
+// 	} else if n < 60 { // 最少提前60秒刷新
+// 		n = 60
+// 	}
+// 	if expires >= a.ExpiresIn-n {
+// 		return true
+// 	}
+// 	return false
+// }
 
 var (
 	// ErrNotFound 不存在

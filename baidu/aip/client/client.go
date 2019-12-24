@@ -185,7 +185,7 @@ func (c *Client) getAccessToken() (token string, err error) {
 		return "", fmt.Errorf("访问令牌存储类型错误:%w", err)
 	}
 	// 检查是否有效和过期
-	if t != nil && !t.IsExpired(c.option.RefreshTime) {
+	if t != nil && !t.Expired(c.option.RefreshTime) {
 		return t.AccessToken, nil
 	}
 	c.Lock()
@@ -198,8 +198,7 @@ func (c *Client) getAccessToken() (token string, err error) {
 	// 保存令牌
 	t = &store.AccessToken{
 		AccessToken: accessToken.AccessToken,
-		ExpiresIn:   accessToken.ExpiresIn,
-		RefreshTime: time.Now().Unix(),
+		ExpiredAt:   time.Now().Add(time.Duration(accessToken.ExpiresIn) * time.Second),
 	}
 	c.accessTokenStore.Set(c.option.AppID, t)
 	return t.AccessToken, nil
@@ -207,7 +206,6 @@ func (c *Client) getAccessToken() (token string, err error) {
 
 // auth 客户端鉴权认证
 func (c *Client) auth() (token *AccessToken, err error) {
-	fmt.Println("--- auth ---")
 	// 设置参数
 	values := url.Values{}
 	values.Set(grantType, clientCredentials)
