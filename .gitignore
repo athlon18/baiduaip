@@ -1,2 +1,3 @@
 *.exe
-baidu/aip/client/testdata/key.json
+baidu/aip/client/testdata/*
+.vscode
