@@ -161,6 +161,10 @@ func mergeOptions(opts ...*Option) *Option {
 			o.IsCloudUser = opt.IsCloudUser
 		}
 	}
+	// 如果AppID为空，使用APIKey赋值
+	if o.AppID == "" {
+		o.AppID = o.APIKey
+	}
 	return o
 }
 
