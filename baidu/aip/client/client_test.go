@@ -176,7 +176,7 @@ func TestClient_getAccessToken(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for i := 0; i < 10; i++ {
-				_, cached, err := tt.fields.client.getAccessToken()
+				_, cached, err := tt.fields.client.GetAccessToken()
 				if (err != nil) != tt.wantErr {
 					t.Errorf("Client.getAccessToken() error = %v, wantErr %v", err, tt.wantErr)
 					return

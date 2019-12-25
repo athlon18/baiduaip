@@ -176,8 +176,8 @@ type AccessToken struct {
 	ErrorDescription string `json:"error_description"`
 }
 
-// auth 客户端获取访问令牌
-func (c *Client) getAccessToken() (token string, cached bool, err error) {
+// GetAccessToken 客户端获取访问令牌
+func (c *Client) GetAccessToken() (token string, cached bool, err error) {
 	// 如果存储为空
 	if c.accessTokenStore == nil {
 		t, err := c.auth()
@@ -249,7 +249,7 @@ func (c *Client) auth() (token *AccessToken, err error) {
 
 // newRequestWithAccessToken 新建http带认证访问令牌的请求
 func (c *Client) newRequestWithAccessToken(method, uri, ctype string, body io.Reader) (*http.Request, error) {
-	accessToken, _, err := c.getAccessToken()
+	accessToken, _, err := c.GetAccessToken()
 	if err != nil {
 		return nil, err
 	}
