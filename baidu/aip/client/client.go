@@ -121,7 +121,7 @@ type Option struct {
 // DefaultOptions 默认选项
 func DefaultOptions() *Option {
 	return &Option{
-		RefreshTime:     86400, // 默认提前天小时刷新令牌
+		RefreshTime:     86400, // 默认提前1天小时刷新令牌
 		ConnectTimeout:  30 * time.Second,
 		KeepAlive:       30 * time.Second,
 		IdleConnTimeout: 90 * time.Second,
