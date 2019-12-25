@@ -36,7 +36,7 @@ const (
 
 var (
 	// DefaultClient 初始默认客户端
-	DefaultClient *Client
+	DefaultClient = NewClient(DefaultOptions())
 )
 
 // Client 百度ai的客户端
@@ -75,9 +75,11 @@ func NewClient(opts ...*Option) *Client {
 	return client
 }
 
-// InitClient 初始化客户端
-func InitClient(opts ...*Option) *Client {
-	return NewClient(opts...)
+// Init 初始化默认客户端
+func Init(opts ...*Option) {
+	client := NewClient(opts...)
+	client.SetAccessTokenStore(nil)
+	DefaultClient = client
 }
 
 // SetAccessTokenStore 设置访问令牌存储
@@ -119,7 +121,7 @@ type Option struct {
 // DefaultOptions 默认选项
 func DefaultOptions() *Option {
 	return &Option{
-		RefreshTime:     3600, // 默认提前1小时刷新令牌
+		RefreshTime:     86400, // 默认提前天小时刷新令牌
 		ConnectTimeout:  30 * time.Second,
 		KeepAlive:       30 * time.Second,
 		IdleConnTimeout: 90 * time.Second,
