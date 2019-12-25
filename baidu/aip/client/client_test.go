@@ -26,12 +26,12 @@ func TestMain(m *testing.M) {
 	img = b
 	img = make([]byte, len(b))
 	copy(img, b)
-	var key struct {
-		AppID, APIKey, SecretKey string
-	}
 	b, err = ioutil.ReadFile("./testdata/key.json")
 	if err != nil {
 		log.Fatalln(err)
+	}
+	var key struct {
+		AppID, APIKey, SecretKey string
 	}
 	if err = json.Unmarshal(b, &key); err != nil {
 		log.Fatalln(err)
@@ -78,7 +78,7 @@ func TestClient_auth(t *testing.T) {
 				return
 			}
 			if gotToken != nil {
-				t.Logf("accessToken: %s, expiresIn: %d", gotToken.AccessToken, gotToken.ExpiresIn)
+				t.Logf("accessToken: *, expiresIn: %d", gotToken.ExpiresIn)
 			}
 		})
 	}
@@ -176,12 +176,12 @@ func TestClient_getAccessToken(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for i := 0; i < 10; i++ {
-				_, cached, err := tt.fields.client.GetAccessToken()
+				_, expiredAt, err := tt.fields.client.GetAccessToken()
 				if (err != nil) != tt.wantErr {
 					t.Errorf("Client.getAccessToken() error = %v, wantErr %v", err, tt.wantErr)
 					return
 				}
-				t.Logf("get access_token success, cached: %t", cached)
+				t.Logf("get access_token success, expiredAt: %v", expiredAt.Format("2006-01-02 15:04:05"))
 				// time.Sleep(time.Second)
 			}
 		})

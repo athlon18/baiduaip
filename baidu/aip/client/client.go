@@ -36,7 +36,7 @@ const (
 
 var (
 	// DefaultClient 初始默认客户端
-	DefaultClient = NewClient(DefaultOptions())
+	DefaultClient *Client
 )
 
 // Client 百度ai的客户端
@@ -51,7 +51,7 @@ type Client struct {
 func NewClient(opts ...*Option) *Client {
 	opt := mergeOptions(opts...)
 	if opt.APIKey == "" || opt.SecretKey == "" {
-		panic("appID or appSecret is empty")
+		panic("APIKey or SecretKey is empty")
 	}
 	client := &Client{
 		option: opt,
@@ -176,25 +176,33 @@ type AccessToken struct {
 	ErrorDescription string `json:"error_description"`
 }
 
+// ExpiredAt 计算访问令牌的过期时间
+func (a *AccessToken) ExpiredAt() time.Time {
+	return time.Now().Add(time.Duration(a.ExpiresIn) * time.Second)
+}
+
 // GetAccessToken 客户端获取访问令牌
-func (c *Client) GetAccessToken() (token string, cached bool, err error) {
+func (c *Client) GetAccessToken() (token string, expiredAt time.Time, err error) {
 	// 如果存储为空
 	if c.accessTokenStore == nil {
-		t, err := c.auth()
+		var t *AccessToken
+		t, err = c.auth()
 		if err != nil {
-			return "", false, err
+			// return "", , err
+			return
 		}
-		return t.AccessToken, false, nil
+		return t.AccessToken, t.ExpiredAt(), nil
 	}
 	// 从存储获取令牌
 	t, err := c.accessTokenStore.Get(c.option.AppID)
 	if err != nil && err != store.ErrNotFound {
-		err = fmt.Errorf("访问令牌存储类型错误:%w", err)
+		err = fmt.Errorf("查询访问令牌错误:%w", err)
 		return
 	}
 	// 检查是否有效和过期
 	if t != nil && !t.Expired(c.option.RefreshTime) {
-		token, cached = t.AccessToken, true
+		token = t.AccessToken
+		expiredAt = t.ExpiredAt
 		return
 	}
 	c.Lock()
@@ -205,9 +213,10 @@ func (c *Client) GetAccessToken() (token string, cached bool, err error) {
 		return
 	}
 	// 保存令牌
+	expiredAt = accessToken.ExpiredAt()
 	t = &store.AccessToken{
 		AccessToken: accessToken.AccessToken,
-		ExpiredAt:   time.Now().Add(time.Duration(accessToken.ExpiresIn) * time.Second),
+		ExpiredAt:   expiredAt,
 	}
 	c.accessTokenStore.Set(c.option.AppID, t)
 	token = t.AccessToken
