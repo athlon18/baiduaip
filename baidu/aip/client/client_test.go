@@ -11,8 +11,6 @@ import (
 	"net/url"
 	"strings"
 	"testing"
-
-	"github.com/antlinker/baiduaip/baidu/aip/store"
 )
 
 var (
@@ -42,7 +40,7 @@ func TestMain(m *testing.M) {
 		log.Fatalln("AppID|APIKey|SecretKey is empty")
 	}
 	client = NewClient(&Option{AppID: key.AppID, APIKey: key.APIKey, SecretKey: key.SecretKey, RefreshTime: 2591995})
-	client.SetAccessTokenStore(store.DefaultAccessTokenStore())
+	client.SetAccessTokenStore(nil)
 	m.Run()
 }
 
@@ -142,8 +140,6 @@ func TestClient_Do(t *testing.T) {
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Client.Do() error = %v, wantErr %v", err, tt.wantErr)
 			}
-			// b, _ := json.MarshalIndent(tt.args.data, "", "  ")
-			// t.Logf("%s\n", b)
 		})
 	}
 }
@@ -180,13 +176,13 @@ func TestClient_getAccessToken(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			for i := 0; i < 10; i++ {
-				gotToken, err := tt.fields.client.getAccessToken()
+				_, cached, err := tt.fields.client.getAccessToken()
 				if (err != nil) != tt.wantErr {
 					t.Errorf("Client.getAccessToken() error = %v, wantErr %v", err, tt.wantErr)
 					return
 				}
-				t.Logf("get access_token: %s", gotToken)
-				// time.Sleep(1 * time.Second)
+				t.Logf("get access_token success, cached: %t", cached)
+				// time.Sleep(time.Second)
 			}
 		})
 	}

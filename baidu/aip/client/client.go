@@ -91,6 +91,11 @@ func (c *Client) SetAccessTokenStore(s store.AccessTokenStore) {
 	c.accessTokenStore = s
 }
 
+// SetAccessTokenStore 设置默认的客户端访问令牌存储
+func SetAccessTokenStore(s store.AccessTokenStore) {
+	DefaultClient.SetAccessTokenStore(s)
+}
+
 // Option 选项
 type Option struct {
 	// AppID
@@ -170,30 +175,32 @@ type AccessToken struct {
 }
 
 // auth 客户端获取访问令牌
-func (c *Client) getAccessToken() (token string, err error) {
+func (c *Client) getAccessToken() (token string, cached bool, err error) {
 	// 如果存储为空
 	if c.accessTokenStore == nil {
 		t, err := c.auth()
 		if err != nil {
-			return "", err
+			return "", false, err
 		}
-		return t.AccessToken, nil
+		return t.AccessToken, false, nil
 	}
 	// 从存储获取令牌
 	t, err := c.accessTokenStore.Get(c.option.AppID)
 	if err != nil && err != store.ErrNotFound {
-		return "", fmt.Errorf("访问令牌存储类型错误:%w", err)
+		err = fmt.Errorf("访问令牌存储类型错误:%w", err)
+		return
 	}
 	// 检查是否有效和过期
 	if t != nil && !t.Expired(c.option.RefreshTime) {
-		return t.AccessToken, nil
+		token, cached = t.AccessToken, true
+		return
 	}
 	c.Lock()
 	defer c.Unlock()
 	// 获取令牌
 	accessToken, err := c.auth()
 	if err != nil {
-		return "", err
+		return
 	}
 	// 保存令牌
 	t = &store.AccessToken{
@@ -201,7 +208,8 @@ func (c *Client) getAccessToken() (token string, err error) {
 		ExpiredAt:   time.Now().Add(time.Duration(accessToken.ExpiresIn) * time.Second),
 	}
 	c.accessTokenStore.Set(c.option.AppID, t)
-	return t.AccessToken, nil
+	token = t.AccessToken
+	return
 }
 
 // auth 客户端鉴权认证
@@ -239,7 +247,7 @@ func (c *Client) auth() (token *AccessToken, err error) {
 
 // newRequestWithAccessToken 新建http带认证访问令牌的请求
 func (c *Client) newRequestWithAccessToken(method, uri, ctype string, body io.Reader) (*http.Request, error) {
-	accessToken, err := c.getAccessToken()
+	accessToken, _, err := c.getAccessToken()
 	if err != nil {
 		return nil, err
 	}
