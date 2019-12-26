@@ -296,9 +296,12 @@ func (c *Client) doRequestWithAccessToken(method, uri, contentType, typ string, 
 
 // Do 执行请求
 func (c *Client) Do(method, uri, contentType, typ string, body io.Reader, data interface{}) (err error) {
-	err = c.doRequestWithAccessToken(method, uri, contentType, typ, body, &data)
-	if data == nil {
+	err = c.doRequestWithAccessToken(method, uri, contentType, typ, body, data)
+	if err != nil {
 		return
+	}
+	if data == nil {
+		return errors.New("未知错误")
 	}
 	v, ok := data.(RequestError)
 	if !ok {
@@ -306,7 +309,7 @@ func (c *Client) Do(method, uri, contentType, typ string, body io.Reader, data i
 	}
 	// 令牌无效或者过期, 重试一次
 	if errCode := v.Code(); errCode == 110 || errCode == 111 {
-		err = c.doRequestWithAccessToken(method, uri, contentType, typ, body, &data)
+		err = c.doRequestWithAccessToken(method, uri, contentType, typ, body, data)
 	}
 	return
 }
@@ -344,7 +347,7 @@ func (c *Client) parseReponse(resp *http.Response, typ string, v interface{}) (e
 		if err != nil {
 			return fmt.Errorf("read body: %w", err)
 		}
-		err = json.Unmarshal(b, &v)
+		err = json.Unmarshal(b, v)
 		if err != nil {
 			err = fmt.Errorf("parse %s data: %w", typ, err)
 		}
