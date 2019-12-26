@@ -79,6 +79,6 @@ type MatchItem struct {
 
 // Match 人脸对比
 func Match(req []*MatchRequest) (res *MatchResponse, err error) {
-	err = postJSON(matchURL, req, res)
+	err = postJSON(matchURL, req, &res)
 	return
 }

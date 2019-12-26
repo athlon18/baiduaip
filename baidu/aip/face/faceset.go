@@ -86,13 +86,13 @@ func (a *AddUserResponse) Error() string {
 
 // AddUser 人脸注册
 func AddUser(req *AddUserRequest) (res *AddUserResponse, err error) {
-	err = postJSON(userAddURL, req, res)
+	err = postJSON(userAddURL, req, &res)
 	return
 }
 
 // UpdateUser 人脸更新
 func UpdateUser(req *AddUserRequest) (res *AddUserResponse, err error) {
-	err = postJSON(userUpdateURL, req, res)
+	err = postJSON(userUpdateURL, req, &res)
 	return
 }
 
@@ -192,7 +192,7 @@ type UserItem struct {
 
 // GetUser 用户信息查询
 func GetUser(req *GetUserRequest) (res *GetUserResponse, err error) {
-	err = postJSON(userGetURL, req, res)
+	err = postJSON(userGetURL, req, &res)
 	return
 }
 
@@ -233,7 +233,7 @@ type ListItem struct {
 
 // GetFaceList 获取用户人脸列表
 func GetFaceList(req *GetUserRequest) (res *GetFaceListResponse, err error) {
-	err = postJSON(faceGetlistURL, req, res)
+	err = postJSON(faceGetlistURL, req, &res)
 	return
 }
 

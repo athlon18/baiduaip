@@ -182,6 +182,6 @@ func NewDetectRequest(image, imageType string) *DetectRequest {
 
 // Detect 人脸检测
 func Detect(req *DetectRequest) (res *DetectResponse, err error) {
-	err = postJSON(detectURL, req, res)
+	err = postJSON(detectURL, req, &res)
 	return
 }

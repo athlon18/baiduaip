@@ -159,6 +159,6 @@ type MultiSearchItem struct {
 
 // MultiSearch 人脸搜索M:N识别
 func MultiSearch(req *MultiSearchRequest) (res *MultiSearchResponse, err error) {
-	err = postJSON(multiSearchURL, req, res)
+	err = postJSON(multiSearchURL, req, &res)
 	return
 }
