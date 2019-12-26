@@ -36,23 +36,6 @@ func (a *AccessToken) Expired(n int64) bool {
 	return false
 }
 
-// IsExpired 是否过期, n的值表示提前多少秒刷新令牌
-// func (a *AccessToken) IsExpired(n int64) bool {
-// 	expires := time.Now().Unix() - a.RefreshTime
-// 	if expires >= a.ExpiresIn {
-// 		return true
-// 	}
-// 	if n >= a.ExpiresIn {
-// 		return true
-// 	} else if n < 60 { // 最少提前60秒刷新
-// 		n = 60
-// 	}
-// 	if expires >= a.ExpiresIn-n {
-// 		return true
-// 	}
-// 	return false
-// }
-
 var (
 	// ErrNotFound 不存在
 	ErrNotFound = errors.New("NotFound")

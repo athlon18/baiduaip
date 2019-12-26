@@ -1,8 +1,9 @@
 package client
 
-import "encoding/json"
-
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
 
 // RequestError 请求错误
 type RequestError interface {
