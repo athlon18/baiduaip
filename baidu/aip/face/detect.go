@@ -1,32 +1,11 @@
 package face
 
-import "fmt"
-
-// DetectResponse 人脸检查响应参数
-type DetectResponse struct {
-	// 错误码
-	ErrorCode int `json:"error_code"`
-	// 错误描述信息
-	ErrorMsg string `json:"error_msg"`
+// DetectResult 人脸检查响应参数
+type DetectResult struct {
 	// FaceNum 检测到的人脸数量
 	FaceNum int `json:"face_num"`
 	// FaceList 人脸信息列表
 	FaceList []*DetectItem `json:"face_list"`
-}
-
-// Code 返回错误码
-func (a *DetectResponse) Code() int {
-	return a.ErrorCode
-}
-
-// Message 返回错误信息
-func (a *DetectResponse) Message() string {
-	return a.ErrorMsg
-}
-
-// Error 实现error接口
-func (a *DetectResponse) Error() string {
-	return fmt.Sprintf("error_code: %d, error_msg: %s", a.ErrorCode, a.ErrorMsg)
 }
 
 // DetectItem 人脸信息
@@ -40,31 +19,31 @@ type DetectItem struct {
 	// 人脸旋转角度参数
 	Angle *DetectAngle `json:"angle"`
 	// 年龄 ，当face_field包含age时返回
-	Age float64 `json:"age"`
+	Age float64 `json:"age,omitempty"`
 	// 美丑打分，范围0-100，越大表示越美。当face_fields包含beauty时返回
-	Beauty int64 `json:"beauty"`
+	Beauty float64 `json:"beauty,omitempty"`
 	// 表情，当 face_field包含expression时返回
-	Expression *DetectExtension `json:"expression"`
+	Expression *DetectExtension `json:"expression,omitempty"`
 	// 脸型，当face_field包含face_shape时返回
-	FaceShape *DetectExtension `json:"face_shape"`
+	FaceShape *DetectExtension `json:"face_shape,omitempty"`
 	// 性别，face_field包含gender时返回
-	Gender *DetectExtension `json:"gender"`
+	Gender *DetectExtension `json:"gender,omitempty"`
 	// 是否带眼镜，face_field包含glasses时返回
-	Glasses *DetectExtension `json:"glasses"`
+	Glasses *DetectExtension `json:"glasses,omitempty"`
 	// 双眼状态（睁开/闭合） face_field包含eye_status时返回
-	EyeStatus *DetectEyeStatus `json:"eyestatus"`
+	EyeStatus *DetectEyeStatus `json:"eyestatus,omitempty"`
 	// 情绪 face_field包含emotion时返回
-	Emotion *DetectExtension `json:"emotion"`
+	Emotion *DetectExtension `json:"emotion,omitempty"`
 	// 真实人脸/卡通人脸 face_field包含face_type时返回
-	FaceType *DetectExtension `json:"FaceType"`
+	FaceType *DetectExtension `json:"face_type,omitempty"`
 	// 4个关键点位置，左眼中心、右眼中心、鼻尖、嘴中心。face_field包含landmark时返回
-	LandMark []*DetectLandMark `json:"landmark"`
-	// 72个特征点位置 face_field包含landmark150时返回
-	LandMark72 []*DetectLandMark `json:"landmark72"`
+	LandMark []*DetectLandMark `json:"landmark,omitempty"`
+	// 72个特征点位置 face_field包含landmark72时返回
+	LandMark72 []*DetectLandMark `json:"landmark72,omitempty"`
 	// 150个特征点位置 face_field包含landmark150时返回
-	LandMark150 []*DetectLandMark `json:"landmark150"`
+	LandMark150 map[string]*DetectLandMark `json:"landmark150,omitempty"`
 	// 人脸质量信息。face_field包含quality时返回
-	Quality *DetectQuality `json:"quality"`
+	Quality *DetectQuality `json:"quality,omitempty"`
 }
 
 // Location 人脸在图片中的位置
@@ -181,7 +160,7 @@ func NewDetectRequest(image, imageType string) *DetectRequest {
 }
 
 // Detect 人脸检测
-func Detect(req *DetectRequest) (res *DetectResponse, err error) {
+func Detect(req *DetectRequest) (res *DetectResult, err error) {
 	err = postJSON(detectURL, req, &res)
 	return
 }

@@ -1,3 +1,4 @@
 *.exe
-baidu/aip/client/testdata/*
 .vscode
+baidu/aip/testdata/*
+testdata/*

@@ -1,7 +1,5 @@
 package face
 
-import "fmt"
-
 // MatchRequest 人脸对比请求参数
 type MatchRequest struct {
 	// 图片信息(总数据大小应小于10M)，图片上传方式根据image_type来判断。 两张图片通过json格式上传
@@ -44,31 +42,12 @@ func NewMatchRequest(image, imageType string) *MatchRequest {
 	}
 }
 
-// MatchResponse 人脸对比响应数据
-type MatchResponse struct {
-	// 错误码
-	ErrorCode int `json:"error_code"`
-	// 错误描述信息
-	ErrorMsg string `json:"error_msg"`
+// MatchResult 人脸对比响应结果
+type MatchResult struct {
 	// 人脸相似度得分，推荐阈值80分
 	Score float32 `json:"score"`
 	// 人脸信息列表
 	FaceList []*MatchItem `json:"face_list"`
-}
-
-// Code 返回错误码
-func (a *MatchResponse) Code() int {
-	return a.ErrorCode
-}
-
-// Message 返回错误信息
-func (a *MatchResponse) Message() string {
-	return a.ErrorMsg
-}
-
-// Error 实现error接口
-func (a *MatchResponse) Error() string {
-	return fmt.Sprintf("error_code: %d, error_msg: %s", a.ErrorCode, a.ErrorMsg)
 }
 
 // MatchItem 人脸对比的项目
@@ -78,7 +57,7 @@ type MatchItem struct {
 }
 
 // Match 人脸对比
-func Match(req []*MatchRequest) (res *MatchResponse, err error) {
+func Match(req []*MatchRequest) (res *MatchResult, err error) {
 	err = postJSON(matchURL, req, &res)
 	return
 }

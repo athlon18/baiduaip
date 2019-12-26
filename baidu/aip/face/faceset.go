@@ -1,7 +1,5 @@
 package face
 
-import "fmt"
-
 // AddUserRequest 人脸注册请求参数
 type AddUserRequest struct {
 	// 图片信息(总数据大小应小于10M)，图片上传方式根据image_type来判断。 两张图片通过json格式上传
@@ -55,43 +53,28 @@ func NewAddUserRequest(image, imageType, groupID, userID string) *AddUserRequest
 	}
 }
 
-// AddUserResponse 人脸注册的响应
-type AddUserResponse struct {
-	// 错误码
-	ErrorCode int `json:"error_code"`
-	// 错误描述信息
-	ErrorMsg string `json:"error_msg"`
-	// 请求标识码，随机数，唯一
-	LogID uint64 `json:"log_id"`
+// AddUserResult 添加用户的响应结果
+type AddUserResult struct {
 	// 人脸图片的唯一标识
 	FaceToken string `json:"face_token"`
 	// 人脸在图片中的位置
 	Location *Location `json:"location"`
 }
 
-// Code 返回错误码
-func (a *AddUserResponse) Code() int {
-	return a.ErrorCode
-}
-
-// Message 返回错误信息
-func (a *AddUserResponse) Message() string {
-	return a.ErrorMsg
-}
-
-// Error 实现error接口
-func (a *AddUserResponse) Error() string {
-	return fmt.Sprintf("error_code: %d, error_msg: %s", a.ErrorCode, a.ErrorMsg)
-}
-
 // AddUser 人脸注册
-func AddUser(req *AddUserRequest) (res *AddUserResponse, err error) {
+func AddUser(req *AddUserRequest) (res *AddUserResult, err error) {
 	err = postJSON(userAddURL, req, &res)
 	return
 }
 
+// UpdateUserRequest 别名
+type UpdateUserRequest = AddUserRequest
+
+// UpdateUserResult 别名
+type UpdateUserResult = AddUserResult
+
 // UpdateUser 人脸更新
-func UpdateUser(req *AddUserRequest) (res *AddUserResponse, err error) {
+func UpdateUser(req *UpdateUserRequest) (res *UpdateUserResult, err error) {
 	err = postJSON(userUpdateURL, req, &res)
 	return
 }
@@ -106,36 +89,9 @@ type DeleteFaceRequest struct {
 	FaceToken string `json:"face_token"`
 }
 
-// EmptyResponse 空响应
-type EmptyResponse struct {
-	// 错误码
-	ErrorCode int `json:"error_code"`
-	// 错误描述信息
-	ErrorMsg string `json:"error_msg"`
-	// 请求标识码，随机数，唯一
-	LogID uint64 `json:"log_id"`
-}
-
-// Code 返回错误码
-func (a *EmptyResponse) Code() int {
-	return a.ErrorCode
-}
-
-// Message 返回错误信息
-func (a *EmptyResponse) Message() string {
-	return a.ErrorMsg
-}
-
-// Error 实现error接口
-func (a *EmptyResponse) Error() string {
-	return fmt.Sprintf("error_code: %d, error_msg: %s", a.ErrorCode, a.ErrorMsg)
-}
-
 // DeleteFace 人脸删除
 func DeleteFace(req *DeleteFaceRequest) (err error) {
-	var res EmptyResponse
-	err = postJSON(faceDeleteURL, req, &res)
-	return
+	return postJSON(faceDeleteURL, req, nil)
 }
 
 // GetUserRequest 用户信息查询
@@ -155,31 +111,10 @@ func NewGetUserRequest(userID, groupID string) *GetUserRequest {
 	}
 }
 
-// GetUserResponse 用户查询响应
-type GetUserResponse struct {
-	// 错误码
-	ErrorCode int `json:"error_code"`
-	// 错误描述信息
-	ErrorMsg string `json:"error_msg"`
-	// 请求标识码，随机数，唯一
-	LogID uint64 `json:"log_id"`
+// GetUserResult 查询用户信息的结果
+type GetUserResult struct {
 	// 查询到的用户列表
 	UserList []*UserItem `json:"user_list"`
-}
-
-// Code 返回错误码
-func (a *GetUserResponse) Code() int {
-	return a.ErrorCode
-}
-
-// Message 返回错误信息
-func (a *GetUserResponse) Message() string {
-	return a.ErrorMsg
-}
-
-// Error 实现error接口
-func (a *GetUserResponse) Error() string {
-	return fmt.Sprintf("error_code: %d, error_msg: %s", a.ErrorCode, a.ErrorMsg)
 }
 
 // UserItem 用户查询的列表项
@@ -191,36 +126,19 @@ type UserItem struct {
 }
 
 // GetUser 用户信息查询
-func GetUser(req *GetUserRequest) (res *GetUserResponse, err error) {
+func GetUser(req *GetUserRequest) (res *GetUserResult, err error) {
 	err = postJSON(userGetURL, req, &res)
 	return
 }
 
-// GetFaceListResponse 获取用户人脸列表的响应
-type GetFaceListResponse struct {
-	// 错误码
-	ErrorCode int `json:"error_code"`
-	// 错误描述信息
-	ErrorMsg string `json:"error_msg"`
-	// 请求标识码，随机数，唯一
-	LogID uint64 `json:"log_id"`
+// GetFaceListRequest 别名
+// 注: 作为GetFaceList的参数时, "@ALL"无效
+type GetFaceListRequest = GetUserRequest
+
+// GetFaceListResult 获取用户人脸列表的结果
+type GetFaceListResult struct {
 	// 人脸列表
 	FaceList []*ListItem `json:"face_list"`
-}
-
-// Code 返回错误码
-func (a *GetFaceListResponse) Code() int {
-	return a.ErrorCode
-}
-
-// Message 返回错误信息
-func (a *GetFaceListResponse) Message() string {
-	return a.ErrorMsg
-}
-
-// Error 实现error接口
-func (a *GetFaceListResponse) Error() string {
-	return fmt.Sprintf("error_code: %d, error_msg: %s", a.ErrorCode, a.ErrorMsg)
 }
 
 // ListItem 人脸列表项
@@ -232,7 +150,7 @@ type ListItem struct {
 }
 
 // GetFaceList 获取用户人脸列表
-func GetFaceList(req *GetUserRequest) (res *GetFaceListResponse, err error) {
+func GetFaceList(req *GetFaceListRequest) (res *GetFaceListResult, err error) {
 	err = postJSON(faceGetlistURL, req, &res)
 	return
 }
@@ -247,34 +165,15 @@ type GetUserListRequest struct {
 	Length uint32 `json:"length"`
 }
 
-// GetUserListResponse 获取用户列表的请求参数
-type GetUserListResponse struct {
-	// 错误码
-	ErrorCode int `json:"error_code"`
-	// 错误描述信息
-	ErrorMsg string `json:"error_msg"`
+// GetUserListResult 查询用户列表的结果
+type GetUserListResult struct {
 	// 用户ID列表
 	UserIDList []string `json:"user_id_list"`
 }
 
-// Code 返回错误码
-func (a *GetUserListResponse) Code() int {
-	return a.ErrorCode
-}
-
-// Message 返回错误信息
-func (a *GetUserListResponse) Message() string {
-	return a.ErrorMsg
-}
-
-// Error 实现error接口
-func (a *GetUserListResponse) Error() string {
-	return fmt.Sprintf("error_code: %d, error_msg: %s", a.ErrorCode, a.ErrorMsg)
-}
-
 // GetUserList 获取用户列表
-func GetUserList(req *GetUserListRequest) (res *GetUserListResponse, err error) {
-	err = postJSON(groupGetusersURL, req, res)
+func GetUserList(req *GetUserListRequest) (res *GetUserListResult, err error) {
+	err = postJSON(groupGetusersURL, req, &res)
 	return
 }
 
@@ -286,10 +185,8 @@ type CopyUserRequest struct {
 }
 
 // CopyUser 复制用户
-func CopyUser(req *CopyUserRequest) (err error) {
-	var res EmptyResponse
-	err = postJSON(userCopyURL, req, res)
-	return
+func CopyUser(req *CopyUserRequest) error {
+	return postJSON(userCopyURL, req, nil)
 }
 
 // DeleteUserRequest 删除用户的请求
@@ -302,9 +199,7 @@ type DeleteUserRequest struct {
 
 // DeleteUser 删除用户
 func DeleteUser(req *DeleteUserRequest) (err error) {
-	var res EmptyResponse
-	err = postJSON(userDeleteURL, req, res)
-	return
+	return postJSON(userDeleteURL, req, nil)
 }
 
 // AddGroupRequest 创建用户组的请求
@@ -314,10 +209,8 @@ type AddGroupRequest struct {
 }
 
 // AddGroup 创建用户组
-func AddGroup(req *AddGroupRequest) (err error) {
-	var res EmptyResponse
-	err = postJSON(groupAddURL, req, res)
-	return
+func AddGroup(req *AddGroupRequest) error {
+	return postJSON(groupAddURL, req, nil)
 }
 
 // DeleteGroupRequest 删除用户组
@@ -327,10 +220,8 @@ type DeleteGroupRequest struct {
 }
 
 // DeleteGroup 删除用户组
-func DeleteGroup(req *DeleteGroupRequest) (err error) {
-	var res EmptyResponse
-	err = postJSON(groupDeleteURL, req, res)
-	return
+func DeleteGroup(req *DeleteGroupRequest) error {
+	return postJSON(groupDeleteURL, req, nil)
 }
 
 // GetGroupListRequest 组列表查询的请求参数
@@ -341,33 +232,14 @@ type GetGroupListRequest struct {
 	Length uint32 `json:"length"`
 }
 
-// GetGroupListResponse 组列表查询的响应
-type GetGroupListResponse struct {
-	// 错误码
-	ErrorCode int `json:"error_code"`
-	// 错误描述信息
-	ErrorMsg string `json:"error_msg"`
+// GetGroupListResult 查询组列表的响应结果
+type GetGroupListResult struct {
 	// 组id列表
 	GroupIDList []string `json:"group_id_list"`
 }
 
-// Code 返回错误码
-func (a *GetGroupListResponse) Code() int {
-	return a.ErrorCode
-}
-
-// Message 返回错误信息
-func (a *GetGroupListResponse) Message() string {
-	return a.ErrorMsg
-}
-
-// Error 实现error接口
-func (a *GetGroupListResponse) Error() string {
-	return fmt.Sprintf("error_code: %d, error_msg: %s", a.ErrorCode, a.ErrorMsg)
-}
-
 // GetGroupList 组列表查询
-func GetGroupList(req *GetGroupListRequest) (res *GetGroupListResponse, err error) {
-	err = postJSON(groupGetlistURL, req, res)
+func GetGroupList(req *GetGroupListRequest) (res *GetGroupListResult, err error) {
+	err = postJSON(groupGetlistURL, req, &res)
 	return
 }

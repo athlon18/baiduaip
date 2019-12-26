@@ -19,14 +19,14 @@ var (
 )
 
 func TestMain(m *testing.M) {
-	b, err := ioutil.ReadFile("./testdata/EF2B8C2B8BCD43DA931B218759D59C22.jpeg")
+	b, err := ioutil.ReadFile("../testdata/EF2B8C2B8BCD43DA931B218759D59C22.jpeg")
 	if err != nil {
 		log.Fatalln(err)
 	}
 	img = b
 	img = make([]byte, len(b))
 	copy(img, b)
-	b, err = ioutil.ReadFile("./testdata/key.json")
+	b, err = ioutil.ReadFile("../testdata/key.json")
 	if err != nil {
 		log.Fatalln(err)
 	}

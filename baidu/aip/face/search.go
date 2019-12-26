@@ -1,7 +1,5 @@
 package face
 
-import "fmt"
-
 // SearchRequest 人脸搜索1:N的请求参数
 type SearchRequest struct {
 	// 图片信息(总数据大小应小于10M)，图片上传方式根据image_type来判断。 两张图片通过json格式上传
@@ -44,12 +42,8 @@ func NewSearchRequest(image, imageType, groupIDList string) *SearchRequest {
 	}
 }
 
-// SearchResponse 人脸搜索响应参数
-type SearchResponse struct {
-	// 错误码
-	ErrorCode int `json:"error_code"`
-	// 错误描述信息
-	ErrorMsg string `json:"error_msg"`
+// SearchResult 人脸搜索响应参数
+type SearchResult struct {
 	// 人脸标志
 	FaceToken string `json:"face_token"`
 	// 匹配的用户信息列表
@@ -69,8 +63,8 @@ type SearchItem struct {
 }
 
 // Search 人脸搜索1:N识别
-func Search(req *SearchRequest) (res *SearchResponse, err error) {
-	err = postJSON(searchURL, req, res)
+func Search(req *SearchRequest) (res *SearchResult, err error) {
+	err = postJSON(searchURL, req, &res)
 	return
 }
 
@@ -120,31 +114,12 @@ func NewMultiSearchRequest(image, imageType, groupIDList string) *MultiSearchReq
 	}
 }
 
-// MultiSearchResponse 人脸搜索M:N的响应
-type MultiSearchResponse struct {
-	// 错误码
-	ErrorCode int `json:"error_code"`
-	// 错误描述信息
-	ErrorMsg string `json:"error_msg"`
+// MultiSearchResult 人脸搜索M:N的响应
+type MultiSearchResult struct {
 	// 图片中的人脸数量
 	FaceNum int `json:"face_num"`
 	// 人脸信息列表
 	FaceList []*MultiSearchItem `json:"face_list"`
-}
-
-// Code 返回错误码
-func (a *MultiSearchResponse) Code() int {
-	return a.ErrorCode
-}
-
-// Message 返回错误信息
-func (a *MultiSearchResponse) Message() string {
-	return a.ErrorMsg
-}
-
-// Error 实现error接口
-func (a *MultiSearchResponse) Error() string {
-	return fmt.Sprintf("error_code: %d, error_msg: %s", a.ErrorCode, a.ErrorMsg)
 }
 
 // MultiSearchItem 人脸搜索M:N的响应列表项
@@ -158,7 +133,7 @@ type MultiSearchItem struct {
 }
 
 // MultiSearch 人脸搜索M:N识别
-func MultiSearch(req *MultiSearchRequest) (res *MultiSearchResponse, err error) {
+func MultiSearch(req *MultiSearchRequest) (res *MultiSearchResult, err error) {
 	err = postJSON(multiSearchURL, req, &res)
 	return
 }

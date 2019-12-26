@@ -1,6 +1,7 @@
 package client
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -245,9 +246,13 @@ func (c *Client) auth() (token *AccessToken, err error) {
 	if err != nil {
 		return nil, err
 	}
-	if c.parseReponse(resp, "json", &token); err != nil {
+	var buf bytes.Buffer
+	if c.parseReponse(resp, "raw", &buf); err != nil {
 		err = fmt.Errorf("http request: %w", err)
 		return
+	}
+	if err = json.Unmarshal(buf.Bytes(), &token); err != nil {
+		err = fmt.Errorf("parse token: %s", err)
 	}
 	if token == nil {
 		err = fmt.Errorf("get access_token error: 未知原因")
@@ -297,13 +302,10 @@ func (c *Client) doRequestWithAccessToken(method, uri, contentType, typ string, 
 // Do 执行请求
 func (c *Client) Do(method, uri, contentType, typ string, body io.Reader, data interface{}) (err error) {
 	err = c.doRequestWithAccessToken(method, uri, contentType, typ, body, data)
-	if err != nil {
+	if err == nil {
 		return
 	}
-	if data == nil {
-		return errors.New("未知错误")
-	}
-	v, ok := data.(RequestError)
+	v, ok := err.(RequestError)
 	if !ok {
 		return
 	}
@@ -347,9 +349,19 @@ func (c *Client) parseReponse(resp *http.Response, typ string, v interface{}) (e
 		if err != nil {
 			return fmt.Errorf("read body: %w", err)
 		}
-		err = json.Unmarshal(b, v)
-		if err != nil {
-			err = fmt.Errorf("parse %s data: %w", typ, err)
+		// fmt.Println(string(b))
+		var res Response
+		if err := json.Unmarshal(b, &res); err != nil {
+			return fmt.Errorf("parse %s response: %w", typ, err)
+		}
+		if res.ErrorCode != 0 {
+			return &res
+		}
+		if v == nil {
+			return nil
+		}
+		if err = json.Unmarshal(res.Reult, v); err != nil {
+			return fmt.Errorf("parse %s data: %w", typ, err)
 		}
 	default:
 		err = errors.New("不支持的类型")
