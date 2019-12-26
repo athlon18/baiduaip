@@ -360,7 +360,7 @@ func (c *Client) parseReponse(resp *http.Response, typ string, v interface{}) (e
 		if v == nil {
 			return nil
 		}
-		if err = json.Unmarshal(res.Reult, v); err != nil {
+		if err = json.Unmarshal(res.Result, v); err != nil {
 			return fmt.Errorf("parse %s data: %w", typ, err)
 		}
 	default:

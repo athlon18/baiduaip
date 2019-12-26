@@ -24,7 +24,7 @@ type Response struct {
 	// cached
 	Cached int `json:"cached,omitempty"`
 	// 响应结果
-	Reult json.RawMessage `json:"result,omitempty"`
+	Result json.RawMessage `json:"result,omitempty"`
 }
 
 // Code 实现RequestError
