@@ -8,11 +8,17 @@ import (
 )
 
 func main() {
-    // InitBaiduFaceOptions 初始化百度人脸服务的客户端
-func InitBaiduFaceOptions(opt *client.Option) {
+    opt := newClientOptions()
     client.Init(opt)
     // ...
 }
+
+// newClientOptions 客户端选项
+func newClientOptions() (opt *client.Option) {
+    // ...
+    return 
+}
+
 ```
 
 
