@@ -14,6 +14,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/antlinker/baiduaip/baidu/aip/message"
 	"github.com/antlinker/baiduaip/baidu/aip/store"
 )
 
@@ -305,7 +306,7 @@ func (c *Client) Do(method, uri, contentType, typ string, body io.Reader, data i
 	if err == nil {
 		return
 	}
-	v, ok := err.(RequestError)
+	v, ok := err.(message.RequestError)
 	if !ok {
 		return
 	}
@@ -350,7 +351,7 @@ func (c *Client) parseReponse(resp *http.Response, typ string, v interface{}) (e
 			return fmt.Errorf("read body: %w", err)
 		}
 		// fmt.Println(string(b))
-		var res Response
+		var res message.Response
 		if err := json.Unmarshal(b, &res); err != nil {
 			return fmt.Errorf("parse %s response: %w", typ, err)
 		}

@@ -1,4 +1,5 @@
-package client
+// Package message 百度智能云的响应信息
+package message
 
 import (
 	"encoding/json"
@@ -27,17 +28,17 @@ type Response struct {
 	Result json.RawMessage `json:"result,omitempty"`
 }
 
-// Code 实现RequestError
+// Code 返回响应的错误码, 如果不是0, 则请求失败
 func (res *Response) Code() int {
 	return res.ErrorCode
 }
 
-// Message 实现RequestError
+// Message 返回错误信息描述
 func (res *Response) Message() string {
 	return res.ErrorMsg
 }
 
-// Error 实现error接口
+// Error Response 的错误信息格式为错误码和错误消息
 func (res *Response) Error() string {
 	return fmt.Sprintf("error_code: %d, error_msg: %s", res.ErrorCode, res.ErrorMsg)
 }
