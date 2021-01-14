@@ -1,0 +1,20 @@
+package ocr
+
+import (
+	"fmt"
+	"github.com/athlon18/baiduaip/baidu/aip/client"
+	"strings"
+	"testing"
+)
+
+const AppID = "233"
+const APIKey = "233"
+const SecretKey = "233"
+
+func TestOcr(t *testing.T) {
+	client.Init(&client.Option{AppID: AppID, APIKey: APIKey, SecretKey: SecretKey, RefreshTime: 2591995})
+	image := strings.Replace("data:image/jpeg;base64,/9j/4AAQSkZJRgABAgAAAQABAAD/2wBDAAgGBgcGBQgHBwcJCQgKDBQNDAsLDBkSEw8UHRofHh0aHBwgJC4nICIsIxwcKDcpLDAxNDQ0Hyc5PTgyPC4zNDL/2wBDAQkJCQwLDBgNDRgyIRwhMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjL/wAARCAAQADwDASIAAhEBAxEB/8QAHwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIhMUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXGx8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAVYnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq8vP09fb3+Pn6/9oADAMBAAIRAxEAPwDsPFnjjX/DOrQ28XhD7ZZ3V1FZ2d3/AGlHH58si5C7NpK87hk8cZzzXV6NdX97pMFxqmm/2bePu8y089ZvLwxA+deDkAH8cVg+OdG1DWD4b+wQCYWeu2t3P8yrsiTdubkjOMjgc/WutoA4WT4oWn2+/tLTwx4nv/sN1JaSzWVgJY/MQ4IDB/oecHBFdXrN1f2Wkz3Gl6b/AGleJt8u089YfMywB+duBgEn8MV594P8F3c2v69qt3qXiHTdniK4mis4pzDb3MYZWDshX51bkEg4IGK9QoA4jwh431rxPqd1b3HhN7G1tLiW0uLpdQjlEU6AEoVwpI5xuXIyR2yRteI/E3/COfZv+JHrWqefu/5Blp5/l7cff5GM549cH0qh4G0a/wBG/wCEk+32/k/bNduryD51bfE+3a3BOM4PBwfaq/xG17VdM0RLPRdL1O7uNQ3wvdWFu0ps04DuApB8zDfIMqMgknjBAL/hLxpaeMPt/wBk03VLP7DKIZft0Aj/AHnOUGGPzLgZBwRuHrXSA5J68e1cn4BvrSTRl0ux0HW9Jt9OijiT+1LQQGbO7LDBwzZBLHA5bPeusAwABnj1OaAP/9k=", "data:image/jpeg;base64,", "", -1)
+
+	data, err := generalBasic(image, "")
+	fmt.Println(data, err)
+}

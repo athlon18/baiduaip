@@ -7,7 +7,7 @@ import (
 	"log"
 	"testing"
 
-	"github.com/antlinker/baiduaip/baidu/aip/client"
+	"github.com/athlon18/baiduaip/baidu/aip/client"
 )
 
 func TestMain(m *testing.M) {

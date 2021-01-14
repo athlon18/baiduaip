@@ -1,10 +1,10 @@
-# baiduaip 实现人脸识别所使用的接口sdk
+# baiduaip 实现人脸识别所使用的接口和通用文字识别（标准版）sdk
 
-[![GoDoc](https://godoc.org/github.com/antlinker/baiduaip/baidu/aip?status.svg)](https://godoc.org/github.com/antlinker/baiduaip/baidu/aip)
+[![GoDoc](https://godoc.org/github.com/athlon18/baiduaip/baidu/aip?status.svg)](https://godoc.org/github.com/antlinker/baiduaip/baidu/aip)
 
 ```go
 import (
-    "github.com/antlinker/baiduaip/baidu/aip/client"
+    "github.com/athlon18/baiduaip/baidu/aip/client"
 )
 
 func main() {

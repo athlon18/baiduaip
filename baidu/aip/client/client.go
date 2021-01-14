@@ -14,8 +14,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/antlinker/baiduaip/baidu/aip/message"
-	"github.com/antlinker/baiduaip/baidu/aip/store"
+	"github.com/athlon18/baiduaip/baidu/aip/message"
+	"github.com/athlon18/baiduaip/baidu/aip/store"
 )
 
 const (
@@ -362,7 +362,9 @@ func (c *Client) parseReponse(resp *http.Response, typ string, v interface{}) (e
 			return nil
 		}
 		if err = json.Unmarshal(res.Result, v); err != nil {
-			return fmt.Errorf("parse %s data: %w", typ, err)
+			if err = json.Unmarshal(b, v); err != nil {
+				return fmt.Errorf("parse %s data: %w", typ, err)
+			}
 		}
 	default:
 		err = errors.New("不支持的类型")

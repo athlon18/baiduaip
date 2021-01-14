@@ -2,3 +2,4 @@
 .vscode
 baidu/aip/testdata/*
 testdata/*
+.idea
